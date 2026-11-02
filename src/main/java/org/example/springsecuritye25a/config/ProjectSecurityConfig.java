@@ -21,7 +21,7 @@ public class ProjectSecurityConfig {
     SecurityFilterChain defaultSecurityFilterChainUdenCsrf(HttpSecurity http) throws Exception {
         http.authorizeHttpRequests((requests) -> {
             requests.requestMatchers("/myAccount").hasRole("ADMIN")
-                    .requestMatchers("/myBalance").hasAnyRole("ADMIN", "SALES")
+                    .requestMatchers("/myBalance","/auth").hasAnyRole("ADMIN", "SALES")
                     .requestMatchers("/contact", "/register").permitAll();
         });
         http.formLogin(Customizer.withDefaults());
@@ -34,9 +34,10 @@ public class ProjectSecurityConfig {
     @Bean
     public SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
         http.csrf(csrfConfig -> csrfConfig.disable())
-                .authorizeHttpRequests((requests) -> { requests
-                        .requestMatchers("/myAccount","/myBalance").authenticated()
-                        .requestMatchers("/contact", "/register").permitAll();
+                .authorizeHttpRequests((requests) -> {
+                    requests.requestMatchers("/myAccount").hasRole("ADMIN")
+                            .requestMatchers("/myBalance","/auth").hasAnyRole("ADMIN", "SALES")
+                            .requestMatchers("/contact", "/register").permitAll();
                 });
         http.formLogin(Customizer.withDefaults());
         http.httpBasic(Customizer.withDefaults());

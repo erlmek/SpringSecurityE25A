@@ -5,7 +5,10 @@ import org.example.springsecuritye25a.repository.CustomerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -18,6 +21,12 @@ public class UserController {
 
     @Autowired
     PasswordEncoder passwordEncoder;
+
+    @GetMapping("/auth")
+    public Authentication getAuth() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        return auth;
+    }
 
     @PostMapping("/register")
     public ResponseEntity<String> registerUser(@RequestBody Customer customer) {
