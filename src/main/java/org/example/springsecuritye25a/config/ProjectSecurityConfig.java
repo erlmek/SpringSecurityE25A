@@ -20,8 +20,9 @@ public class ProjectSecurityConfig {
 
     SecurityFilterChain defaultSecurityFilterChainUdenCsrf(HttpSecurity http) throws Exception {
         http.authorizeHttpRequests((requests) -> {
-            requests.requestMatchers("/myAccount","/myBalance").authenticated()
-                    .requestMatchers("/contact").permitAll();
+            requests.requestMatchers("/myAccount").hasRole("ADMIN")
+                    .requestMatchers("/myBalance").hasAnyRole("ADMIN", "SALES")
+                    .requestMatchers("/contact", "/register").permitAll();
         });
         http.formLogin(Customizer.withDefaults());
         //http.formLogin(flc -> flc.disable());
