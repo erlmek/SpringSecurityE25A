@@ -2,6 +2,7 @@ package org.example.springsecuritye25a.config;
 
 import jakarta.servlet.http.HttpServletRequest;
 import org.example.springsecuritye25a.filter.JWTTokenGeneratorFilter;
+import org.example.springsecuritye25a.filter.JWTTokenValidatorFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
@@ -55,7 +56,7 @@ public class ProjectSecurityConfig {
 
     @Bean
     SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
-        http.csrf((csrf) -> csrf.ignoringRequestMatchers("/contact","/register"));
+        http.csrf((csrf) -> csrf.ignoringRequestMatchers("/contact","/register","/dologin"));
         //http.csrf(csrfConfig -> csrfConfig.disable())
         http.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .cors(corsCustomizer -> corsCustomizer.configurationSource(new CorsConfigurationSource() {
@@ -72,23 +73,16 @@ public class ProjectSecurityConfig {
                     }
                 }))
                 .addFilterAfter(new JWTTokenGeneratorFilter(), BasicAuthenticationFilter.class)
+                .addFilterBefore(new JWTTokenValidatorFilter(), BasicAuthenticationFilter.class)
                 .authorizeHttpRequests((requests) -> { requests
                         .requestMatchers("/myAccount").hasRole("ADMIN")
                         .requestMatchers("/myBalance","/auth").hasAnyRole("ADMIN","SALES")
-                        .requestMatchers("/contact", "/register").permitAll();
+                        .requestMatchers("/contact", "/register", "/dologin").permitAll();
                 })
                 .formLogin(Customizer.withDefaults())
                 .httpBasic(Customizer.withDefaults());
         return http.build();
     }
-
-
-
-
-
-
-
-
 
     public PasswordEncoder passwordEncoderTest() {
         //return NoOpPasswordEncoder.getInstance();  //ingen password kryptering

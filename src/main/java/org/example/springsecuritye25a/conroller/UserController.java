@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -27,6 +28,18 @@ public class UserController {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         return auth;
     }
+
+    @PostMapping("/dologin")
+    public ResponseEntity<String> doLogin() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if(auth.isAuthenticated()){
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body("Du er logget på");
+        } else {
+            throw new UsernameNotFoundException("invalid user request..!!");
+        }
+    }
+
 
     @PostMapping("/register")
     public ResponseEntity<String> registerUser(@RequestBody Customer customer) {
